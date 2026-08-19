@@ -42,7 +42,7 @@ int CALLBACK wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR lpCmdL
 
 	Application::Create(hInstance);
 	{
-		std::shared_ptr<Tutorial2> demo = std::make_shared<Tutorial2>(L"Learning DirectX 12 - Part 2", 1280, 720);
+		std::shared_ptr<Tutorial2> demo = std::make_shared<Tutorial2>(L"Learning DirectX 12 - Part 3", 1280, 720);
 		retCode = Application::Get().Run(demo);
 	}
 	Application::Destroy();
