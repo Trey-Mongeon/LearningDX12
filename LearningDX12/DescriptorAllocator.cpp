@@ -8,6 +8,10 @@ DescriptorAllocator::DescriptorAllocator(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32
 {
 }
 
+DescriptorAllocator::~DescriptorAllocator()
+{
+}
+
 std::shared_ptr<DescriptorAllocatorPage> DescriptorAllocator::CreateAllocatorPage()
 {
 	std::shared_ptr<DescriptorAllocatorPage> newPage = std::make_shared<DescriptorAllocatorPage>(m_HeapType, m_NumDescriptorsPerHeap);
@@ -40,19 +44,19 @@ DescriptorAllocation DescriptorAllocator::Allocate(uint32_t numDescriptors)
 		{
 			break;
 		}
-
-		// No available heap could satisfy the requested number of descriptors
-		if (allocation.IsNull())
-		{
-			m_NumDescriptorsPerHeap = std::max(m_NumDescriptorsPerHeap, numDescriptors);
-
-			std::shared_ptr<DescriptorAllocatorPage> newPage = CreateAllocatorPage();
-
-			allocation = newPage->Allocate(numDescriptors);
-		}
-
-		return allocation;
 	}
+
+	// No available heap could satisfy the requested number of descriptors
+	if (allocation.IsNull())
+	{
+		m_NumDescriptorsPerHeap = std::max(m_NumDescriptorsPerHeap, numDescriptors);
+
+		std::shared_ptr<DescriptorAllocatorPage> newPage = CreateAllocatorPage();
+
+		allocation = newPage->Allocate(numDescriptors);
+	}
+
+	return allocation;
 }
 
 void DescriptorAllocator::ReleaseStaleDescriptors(uint64_t frameNumber)

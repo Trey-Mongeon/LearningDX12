@@ -2,10 +2,14 @@
 // Summer 2026
 // Learning DX12
 
+// Following Jeremiah van Oostens tutorial on 3DGEP
+
 // This class is for creating a window for the application and probably manage other stuff later.
 // Uses windows API specific stuff
 
 #pragma once
+
+#include "DescriptorAllocation.h"
 
 #include <d3d12.h>
 #include <dxgi1_6.h>
@@ -18,6 +22,7 @@
 // Forward declarations
 
 class CommandQueue;
+class DescriptorAllocator;
 class Window;
 class Game;
 
@@ -37,6 +42,9 @@ public:
 
 	// Check if VSync-off is supported
 	bool IsTearingSupported() const;
+
+	// Check if the requested multisample quality is supported for the given format
+	DXGI_SAMPLE_DESC GetMultisampleQualityLevels(DXGI_FORMAT format, UINT numSamples, D3D12_MULTISAMPLE_QUALITY_LEVEL_FLAGS flags = D3D12_MULTISAMPLE_QUALITY_LEVELS_FLAG_NONE) const;
 
 	/**
 	* Create a new DirectX11 render window instance.
@@ -81,8 +89,19 @@ public:
 	// Flush all command queues
 	void Flush();
 
+	// Allocate a number of CPU visible descriptors
+	DescriptorAllocation ALlocateDescriptors(D3D12_DESCRIPTOR_HEAP_TYPE type, uint32_t numDescriptors = 1);
+
+	// Release stale descriptors, this should only be called with a completed frames number
+	void ReleaseStaleDescriptors(uint64_t finishedFrame);
+
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> CreateDescriptorHeap(UINT numDescriptors, D3D12_DESCRIPTOR_HEAP_TYPE type);
 	UINT GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE type) const;
+
+	static uint64_t GetFrameCount()
+	{
+		return ms_FrameCount;
+	}
 
 protected:
 
@@ -92,6 +111,9 @@ protected:
 	// Destroy the application instance and all windows associated with it
 	virtual ~Application();
 
+	// Initialize the application instance
+	void Initialize();
+
 	Microsoft::WRL::ComPtr<IDXGIAdapter4> GetAdapter(bool bUseWarp);
 	Microsoft::WRL::ComPtr<ID3D12Device2> CreateDevice(Microsoft::WRL::ComPtr <IDXGIAdapter4> adapter);
 
@@ -99,6 +121,7 @@ protected:
 
 private:
 
+	friend LRESULT CALLBACK WndProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
 	Application(const Application& rhs) = delete;
 	Application& operator=(const Application& other) = delete;
 
@@ -112,6 +135,10 @@ private:
 	std::shared_ptr<CommandQueue> m_ComputeCommandQueue;
 	std::shared_ptr<CommandQueue> m_CopyCommandQueue;
 
+	std::unique_ptr<DescriptorAllocator> m_DescriptorAllocators[D3D12_DESCRIPTOR_HEAP_TYPE_NUM_TYPES];
+
 	bool m_TearingSupported;
+
+	static uint64_t ms_FrameCount;
 
 };

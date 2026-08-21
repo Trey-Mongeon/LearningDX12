@@ -50,6 +50,34 @@ void DescriptorAllocation::Free()
 {
 	if (!IsNull() && m_Page)
 	{
-		m_Page->Free(std::move(*this), Application::GetFrameCount())
+		m_Page->Free(std::move(*this), Application::GetFrameCount());
+
+		m_Descriptor.ptr = 0;
+		m_NumHandles = 0;
+		m_DescriptorSize = 0;
+		m_Page.reset();
 	}
+}
+
+// Check if this is a valid descriptor
+bool DescriptorAllocation::IsNull() const
+{
+	return m_Descriptor.ptr == 0;
+}
+
+// Get a descriptor at a particular offset in the allocation
+D3D12_CPU_DESCRIPTOR_HANDLE DescriptorAllocation::GetDescriptorHandle(uint32_t offset) const
+{
+	assert(offset < m_NumHandles);
+	return { m_Descriptor.ptr + (m_DescriptorSize * offset) };
+}
+
+uint32_t DescriptorAllocation::GetNumHandles() const
+{
+	return m_NumHandles;
+}
+
+std::shared_ptr<DescriptorAllocatorPage> DescriptorAllocation::GetDescriptorAllocatorPage() const
+{
+	return m_Page;
 }
