@@ -16,4 +16,4 @@ Throughout this project I have been following [Jeremiah Van Oosten's tutorial on
 
 ## My Key Takeaways so far
 
-DirectX 12 and Vulkan are very similar, I'm fairly confident I could work in an existing framework built using either of the two. It's very odd that all of my graphics coursework uses Vulkan as the API and I don't know a single graphics programmer who is familiar with DirectX 12, they all only know Vulkan. I wouldn't say that I prefer DirectX 12 over Vulkan yet but I think that it is a little nicer to set up at the start. I would like to continue learning DirectX 12 to widen my range when I have the time needed to do so.
+DirectX 12 and Vulkan are very similar, I'm fairly confident I could work in an existing framework built using either of the two. It's very odd that all of my graphics coursework uses Vulkan as the API and I don't know a single graphics programmer who is familiar with DirectX 12. I wouldn't say that I prefer DirectX 12 over Vulkan yet but I think that it is a little nicer to set up at the start. I would like to continue learning DirectX 12 to widen my range when I have the time needed to do so.
